@@ -23,8 +23,25 @@ extern "C" {
 #define DRV_FORMAT_MOD_VENDOR_SAMSUNG 0x04
 #define DRV_FORMAT_MOD_VENDOR_QCOM    0x05
 
+/* Vendor ID for downstream, interim ChromeOS specific modifiers. */
+#define DRV_FORMAT_MOD_VENDOR_CHROMEOS 0xf0
+
 #define drv_fourcc_mod_code(vendor, val) \
 	((((__u64)DRV_FORMAT_MOD_VENDOR_## vendor) << 56) | (val & 0x00ffffffffffffffULL))
+
+/*
+ * Rockchip ARM Framebuffer Compression (AFBC)
+ *
+ * This modifier identifies the specific variant of AFBC supported by the
+ * Rockchip display hardware. It's technically a two-plane format: first a
+ * header with 16 bytes per block, followed by the block data aligned to 1024
+ * bytes. Each block is 16x16 pixels.
+ *
+ * Eventually ARM should define modifiers for the various AFBC types, but
+ * we'll use this in the meantime. We use the CHROMEOS vendor ID to make sure
+ * we don't clash with future vendor modifiers.
+ */
+#define DRV_FORMAT_MOD_CHROMEOS_ROCKCHIP_AFBC	drv_fourcc_mod_code(CHROMEOS, 1)
 
 /* Use flags */
 #define DRV_BO_USE_NONE				 0

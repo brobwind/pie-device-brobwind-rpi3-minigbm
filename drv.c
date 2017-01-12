@@ -266,12 +266,12 @@ struct bo *drv_bo_create_with_modifiers(struct driver *drv,
 		return NULL;
 	}
 
-	pthread_mutex_lock(&drv->driver_lock);
+	pthread_mutex_lock(&drv->table_lock);
 
 	for (plane = 0; plane < bo->num_planes; plane++)
 		drv_increment_reference_count(drv, bo, plane);
 
-	pthread_mutex_unlock(&drv->driver_lock);
+	pthread_mutex_unlock(&drv->table_lock);
 
 	return bo;
 }

@@ -154,7 +154,8 @@ PUBLIC struct gbm_bo *gbm_bo_create_with_modifiers(struct gbm_device *gbm,
 		return NULL;
 
 	bo->bo = drv_bo_create_with_modifiers(gbm->drv,
-					      width, height, format,
+					      width, height,
+					      gbm_convert_format(format),
 					      modifiers, count);
 
 	if (!bo->bo) {

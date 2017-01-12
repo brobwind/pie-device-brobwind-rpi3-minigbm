@@ -8,6 +8,7 @@
 
 #include <assert.h>
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/mman.h>
@@ -60,7 +61,7 @@ static int afbc_bo_from_format(struct bo *bo, uint32_t width, uint32_t height,
 
 	bo->total_size = total_size;
 
-	bo->format_modifiers[0] = DRM_FORMAT_MOD_CHROMEOS_ROCKCHIP_AFBC;
+	bo->format_modifiers[0] = DRV_FORMAT_MOD_CHROMEOS_ROCKCHIP_AFBC;
 
 	return 0;
 }
@@ -81,6 +82,7 @@ static int rockchip_bo_create_with_modifiers(struct bo *bo,
 					     uint32_t format,
 					     const uint64_t *modifiers,
 					     uint32_t count)
+{
 	int ret;
 	size_t plane;
 	struct drm_rockchip_gem_create gem_create;
@@ -96,12 +98,12 @@ static int rockchip_bo_create_with_modifiers(struct bo *bo,
 		bo->total_size = bo->strides[0] * aligned_height
 				 + w_mbs * h_mbs * 128;
 	} else if (has_modifier(modifiers, count,
-				DRM_FORMAT_MOD_CHROMEOS_ROCKCHIP_AFBC)) {
+				DRV_FORMAT_MOD_CHROMEOS_ROCKCHIP_AFBC)) {
 		/* If the caller has decided they can use AFBC, always
 		 * pick that */
 		afbc_bo_from_format(bo, width, height, format);
 	} else {
-		if (!has_modifier(modifiers, count, DRM_FORMAT_MOD_NONE)) {
+		if (!has_modifier(modifiers, count, DRV_FORMAT_MOD_NONE)) {
 			errno = EINVAL;
 			fprintf(stderr, "no usable modifier found\n");
 			return -1;
@@ -130,7 +132,7 @@ static int rockchip_bo_create_with_modifiers(struct bo *bo,
 static int rockchip_bo_create(struct bo *bo, uint32_t width, uint32_t height,
 			      uint32_t format, uint32_t flags)
 {
-	uint64_t modifiers[] = { DRM_FORMAT_MOD_NONE };
+	uint64_t modifiers[] = { DRV_FORMAT_MOD_NONE };
 
 	return rockchip_bo_create_with_modifiers(bo, width, height, format,
 						 modifiers, ARRAY_SIZE(modifiers));
@@ -143,7 +145,7 @@ static void *rockchip_bo_map(struct bo *bo, struct map_info *data, size_t plane)
 
 	/* We can only map buffers created with SW access flags, which should
 	 * have no modifiers (ie, not AFBC). */
-	if (bo->format_modifiers[0] == DRM_FORMAT_MOD_CHROMEOS_ROCKCHIP_AFBC)
+	if (bo->format_modifiers[0] == DRV_FORMAT_MOD_CHROMEOS_ROCKCHIP_AFBC)
 		return MAP_FAILED;
 
 	memset(&gem_map, 0, sizeof(gem_map));
