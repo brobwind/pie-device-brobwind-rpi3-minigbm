@@ -107,10 +107,12 @@ static int i915_add_combinations(struct driver *drv)
 	drv_modify_combination(drv, DRM_FORMAT_XRGB8888, &metadata, BO_USE_CURSOR | BO_USE_SCANOUT);
 	drv_modify_combination(drv, DRM_FORMAT_ARGB8888, &metadata, BO_USE_CURSOR | BO_USE_SCANOUT);
 
+	render_flags &= ~BO_USE_RENDERSCRIPT;
 	render_flags &= ~BO_USE_SW_WRITE_OFTEN;
 	render_flags &= ~BO_USE_SW_READ_OFTEN;
 	render_flags &= ~BO_USE_LINEAR;
 
+	texture_flags &= ~BO_USE_RENDERSCRIPT;
 	texture_flags &= ~BO_USE_SW_WRITE_OFTEN;
 	texture_flags &= ~BO_USE_SW_READ_OFTEN;
 	texture_flags &= ~BO_USE_LINEAR;
@@ -263,7 +265,8 @@ static int i915_bo_create(struct bo *bo, uint32_t width, uint32_t height, uint32
 	struct drm_i915_gem_create gem_create;
 	struct drm_i915_gem_set_tiling gem_set_tiling;
 
-	if (flags & (BO_USE_CURSOR | BO_USE_LINEAR | BO_USE_SW_READ_OFTEN | BO_USE_SW_WRITE_OFTEN))
+	if (flags & (BO_USE_CURSOR | BO_USE_LINEAR | BO_USE_RENDERSCRIPT | BO_USE_SW_READ_OFTEN |
+		     BO_USE_SW_WRITE_OFTEN))
 		bo->tiling = I915_TILING_NONE;
 	else if (flags & BO_USE_SCANOUT)
 		bo->tiling = I915_TILING_X;
