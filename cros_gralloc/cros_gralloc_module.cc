@@ -83,6 +83,7 @@ static int cros_gralloc_register_buffer(struct gralloc_module_t const *module,
 		data.format = hnd->format;
 		data.width = hnd->width;
 		data.height = hnd->height;
+		data.flags = cros_gralloc_convert_flags(hnd->usage);
 
 		memcpy(data.fds, hnd->fds, sizeof(data.fds));
 		memcpy(data.strides, hnd->strides, sizeof(data.strides));
