@@ -46,6 +46,8 @@ MINIGBM_CPPFLAGS += -DDRV_MESON
 MINIGBM_CFLAGS += -DDRV_MESON
 endif
 
+MINIGBM_CFLAGS += -DDRV_VC4
+
 include $(CLEAR_VARS)
 
 SUBDIRS := cros_gralloc
@@ -61,7 +63,7 @@ include $(MINIGBM_GRALLOC_MK)
 LOCAL_CFLAGS := $(MINIGBM_CFLAGS)
 LOCAL_CPPFLAGS := $(MINIGBM_CPPFLAGS)
 
-LOCAL_MODULE := gralloc.$(TARGET_BOARD_PLATFORM)
+LOCAL_MODULE := gralloc.drm
 LOCAL_MODULE_TAGS := optional
 # The preferred path for vendor HALs is /vendor/lib/hw
 LOCAL_PROPRIETARY_MODULE := true
@@ -72,11 +74,14 @@ LOCAL_HEADER_LIBRARIES += \
 	libhardware_headers libnativebase_headers libsystem_headers
 LOCAL_SHARED_LIBRARIES += libnativewindow libsync liblog
 LOCAL_STATIC_LIBRARIES += libarect
+
+LOCAL_MODULE_SYMLINKS := gralloc.rpi3.so
+
 include $(BUILD_SHARED_LIBRARY)
 
 
 include $(CLEAR_VARS)
-LOCAL_SHARED_LIBRARIES := libcutils
+LOCAL_SHARED_LIBRARIES := liblog
 LOCAL_STATIC_LIBRARIES := libdrm
 
 LOCAL_SRC_FILES += $(MINIGBM_SRC) gbm.c gbm_helpers.c
